@@ -26,22 +26,15 @@ This project may contain unstable APIs which may not be ready for general use. S
 
 ## System Requirements
 
-* Swift 5.2 or later
-* Xcode 11.4 or later
-* MacOS 10.14.6 or later
+* Swift 5.3 or later
+* Xcode 12.0 or later
+* MacOS 10.15.4 or later
 * Support is included for the Swift Package Manager
 
 
 ## Build / Install
 
-Option 1: By [Mint](https://github.com/yonaskolb/Mint)
-
-```
-$ mint install uber/SwiftCodeSan
-$ mint run uber/SwiftCodeSan SwiftCodeSan -h // see commandline input options below 
-```
-
-Option 2: Clone and build 
+Option 1: Clone and build 
 
 ```
 $ git clone https://github.com/uber/SwiftCodeSan.git
@@ -63,9 +56,9 @@ $ swift package generate-xcodeproj
 `SwiftCodeSan` is a commandline executable. To run it, pass in a list of the source file directories or file paths of a build target, and the destination filepath for the mock output. To see other arguments to the commandline, run `SwiftCodeSan --help`.
 
 ```
-./SwiftCodeSan -filelist [filename] --remove-deadcode --override
+./SwiftCodeSan --files-to-mouldes [file_to_module_list] --remove-deadcode --in-place
 ```
-The `filename` contains a map of source file paths to module names.  Other input options are `--remote-unused-imports` and `--remove-public`.  If `--override` is set, files will be modified directly. 
+The `file_to_module_list` contains a map of source file paths to corresponding module names.  Other input options are `--remote-unused-imports` and `--remove-public`.  If `--in-place` is set, files will be modified directly. 
 
 Use --help to see the complete list of argument options.
 
@@ -113,7 +106,7 @@ See [CONTRIBUTING](CONTRIBUTING.md) for more info.
 
 If you run into any problems, please file a git issue. Please include:
 
-* The OS version (e.g. macOS 10.14.6)
+* The OS version (e.g. macOS 10.15.6)
 * The Swift version installed on your machine (from `swift --version`)
 * The Xcode version
 * The specific release version of this source code (you can use `git tag` to get a list of all the release versions or `git log` to get a specific commit sha)
