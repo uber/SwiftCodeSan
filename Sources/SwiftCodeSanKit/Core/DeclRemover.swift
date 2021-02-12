@@ -29,13 +29,6 @@ public final class DeclRemover: SyntaxRewriter {
     public init(_ path: String, decls: [DeclMetadata]) {
         self.path = path
         self.decls = decls
-
-        if path.contains("RideInteractor.swift") ||
-            path.contains("TripInteractor.swift") ||
-            path.contains("TransitTicketStream.swift") {
-            print("PATH", path)
-            print("REMOVE decls", decls.map{ ObjectIdentifier($0)})
-        }
     }
 
     override public func visit(_ node: ExtensionDeclSyntax) -> DeclSyntax {

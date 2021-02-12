@@ -196,32 +196,42 @@ class Executor {
         let whitelistModulesSuffix = arguments.get(self.whitelistModulesSuffix)
         let whitelistParents = arguments.get(self.whitelistParents)
         let whitelistMembers = arguments.get(self.whitelistMembers)
-//        let whitelistPathsInfix = arguments.get(self.whitelistPathsInfix)
         let thresholdDays = arguments.get(self.thresholdDays)
 
         let deps = arguments.get(self.fileLists) ?? []
         let syslibs = arguments.get(self.syslibLists) ?? []
-        let testLists = arguments.get(self.testFileLists) ?? []
 
-        // nonUserModules: syslib, objc, vendor modules
-        guard let (filesToModules, nonUserModules) = parseDeps(root, deps, syslibs) else { return }
-        let testfiles = parseTestFiles(root, testLists)
-
+        var filesToModules = [String: String]()
+        deps.forEach { arg in
+            let line = arg.components(separatedBy: ":")
+            if let key = line.first, let val = line.last {
+                filesToModules[key] = val
+            }
+        }
+        
         let whitelist = Whitelist(thresholdDays: thresholdDays,
-                                  pathsInfix: nil,
                                   decls: whitelistDecls,
                                   declsPrefix: whitelistDeclsPrefix,
                                   declsSuffix: whitelistDeclsSuffix,
-                                  modules: [whitelistModules, nonUserModules].compactMap{$0}.flatMap{$0},
+                                  modules: [whitelistModules, syslibs].compactMap{$0}.flatMap{$0},
                                   modulesPrefix: whitelistModulesPrefix,
                                   modulesSuffix: whitelistModulesSuffix,
                                   inheritedTypes: whitelistParents,
                                   members: whitelistMembers)
 
-        execute(with: filesToModules, testfiles,
-                root, logfile, inplace, inplaceTests,
-                topDeclsOnly, jobs, whitelist,
-                deleteUnusedImports, shouldUpdateAccessLevels, deleteDeadCode, deleteAnnotation)
+        execute(with: filesToModules,
+                nil,
+                root,
+                logfile,
+                inplace,
+                inplaceTests,
+                topDeclsOnly,
+                jobs,
+                whitelist,
+                deleteUnusedImports,
+                shouldUpdateAccessLevels,
+                deleteDeadCode,
+                deleteAnnotation)
     }
 
 
@@ -266,135 +276,6 @@ class Executor {
                                concurrencyLimit: jobs,
                                onCompletion: {})
 
-        } else if let annotation = deleteAnnotation {
-            removeUnusedAnnotations(annotation: annotation,
-                                    filesToModules: filesToModules,
-                                    whitelist: whitelist,
-                                    inplace: inplace,
-                                    testFiles: testfiles,
-                                    statsFile: logfile,
-                                    concurrencyLimit: jobs)
-        }
+        } 
     }
 }
-
-// MARK - following should be in python
-
-func parseSystemLibs(_ syslibLists: [String]) -> [String] {
-    do {
-        var list = [String]()
-        for syslibList in syslibLists {
-            let content = try String(contentsOfFile: syslibList)
-            let comps = content.components(separatedBy: "\n").map{$0.trimmed}.filter{!$0.isEmpty}
-            list.append(contentsOf: comps)
-        }
-        let sortedList = Set(list).sorted()
-        return sortedList
-    } catch {
-        fatalError(error.localizedDescription)
-    }
-}
-
-func parseTestFiles(_ rootPath: String?, _ files: [String]) -> [String] {
-    do {
-        let root = rootPath ?? ""
-        var list = [String]()
-        for f in files {
-            let data = try Data(contentsOf: URL(fileURLWithPath: f))
-            guard !data.isEmpty else { return [] }
-
-            let json = try JSONSerialization.jsonObject(with: data, options: [])
-            if let moduleToFiles = json as? [String: [String: [String]]] {
-                for (prefix, val) in moduleToFiles {
-                    if let filelist = val["srcs"] {
-                        if let first = prefix.components(separatedBy: ":").first {
-                            let files = filelist.filter{$0.hasSuffix(".swift")}.map { root + first.dropFirst(1) + "/" + $0 }
-                            list.append(contentsOf: files)
-                        }
-                    }
-                }
-            }
-        }
-        return list
-    } catch {
-        fatalError(error.localizedDescription)
-    }
-}
-
-func parseFileToModuleMap(_ path: String) -> ([String: String], [String]) {
-
-    do {
-        var src2modules = [String: String]()
-        var whitelist = [String]()
-        let content = try String(contentsOfFile: path)
-        let comps = content.components(separatedBy: "\n")
-        for c in comps {
-            let cs = c.components(separatedBy: ": ")
-            if let f = cs.first, let m = cs.last {
-                src2modules[f] = m
-                if f.contains("/vendor/") {
-                    whitelist.append(m)
-                } else if !f.hasSuffix(".swift") {
-                    whitelist.append(m)
-                }
-            }
-        }
-        let whitelistModules = Set(whitelist).sorted()
-        return (src2modules, whitelistModules)
-    } catch {
-        fatalError(error.localizedDescription)
-    }
-}
-
-func parseDeps(_ root: String?, _ depsFiles: [String], _ syslibFiles: [String]) -> ([String: String], [String])? {
-
-    do {
-        let rootPath = root ?? ""
-        var filesToModules = [String: String]()
-        var whitelist = [String]()
-
-        for f in depsFiles {
-            let data = try Data(contentsOf: URL(fileURLWithPath: f))
-            let json = try JSONSerialization.jsonObject(with: data, options: [])
-            if let m2f = json as? [String: [String]] {
-                for (m, files) in m2f {
-                    if files.isEmpty {  // srcs are null, the module could contain .h files with implementations
-                        whitelist.append(m)
-                        continue
-                    }
-                    for f in files {
-                        if f.contains("/vendor/") {
-                            whitelist.append(m)
-                        } else if f.hasSuffix(".swift") {
-                            let fbase = f.withoutExt
-
-                            if fbase.hasSuffix("Mocks") {
-                                if fbase.contains("ManualIdentityVerification") {
-                                    //                                    mockFiles.append(root + "/" + f)
-                                } else if fbase.contains("TestMocks") || fbase.contains("Manual") {
-                                    filesToModules[rootPath + f] = m
-                                } else {
-                                    //                                    mockFiles.append(root + "/" + f)
-                                }
-                            } else if fbase.hasSuffix("VectorDrawables") || fbase.hasSuffix("Images") || fbase.hasSuffix("Strings") || f.contains("AnalyticsCodegen") || fbase.hasSuffix("Needle") {
-                                // filter out
-                            } else {
-                                filesToModules[rootPath + f] = m
-                            }
-                        } else {
-                            whitelist.append(m)
-                        }
-                    }
-                }
-
-                let syslibs = parseSystemLibs(syslibFiles)
-                whitelist.append(contentsOf: syslibs)
-            }
-        }
-        let whitelistedModuls = Set(whitelist).compactMap{$0}
-        return (filesToModules, whitelistedModuls)
-    } catch {
-        fatalError(error.localizedDescription)
-    }
-}
-

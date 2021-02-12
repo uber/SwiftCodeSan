@@ -1461,28 +1461,6 @@ extension TokenSequence {
     var exprTokenList: [String] {
         return self.compactMap { $0.exprToken }
     }
-
-    //    func arefTypes(with declMap: DeclMap, filterKey: String? = nil) -> [String] {
-    //        var ret = [String]()
-    //
-    //        if let filterKey = filterKey {
-    //            let filtered = tokenList.compactMap { (arg: String) -> String? in
-    //                if arg.hasSuffix(filterKey) {
-    //                    let key = String(arg.dropLast(filterKey.count))
-    //                    if declMap[key] != nil || key.contains(".") {
-    //                        return arg
-    //                    }
-    //                }
-    //                return nil
-    //            }
-    //            ret.append(contentsOf: filtered)
-    //        } else {
-    //            let filtered = tokenList.filter { declMap[$0] != nil || $0.contains(".") }
-    //            ret.append(contentsOf: filtered)
-    //        }
-    //
-    //        return ret
-    //    }
 }
 
 

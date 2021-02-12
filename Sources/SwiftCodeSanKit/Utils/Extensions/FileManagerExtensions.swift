@@ -15,22 +15,19 @@
 //
 
 import Foundation
-import SwiftSyntax
 
-/**
-Checks annotations of the referenced decls
-*/
-final class AnnotatedReferenceChecker: SyntaxVisitor {
-    let path: String
-    var usedTypes = [String]()
-    let declMap: DeclMap
-    init(path: String, declMap: DeclMap) {
-        self.path = path
-        self.declMap = declMap
-    }
-    
-    override func visit(_ node: CodeBlockItemSyntax) -> SyntaxVisitorContinueKind {
-        usedTypes.append(contentsOf: node.item.refTypes(with: declMap, filterKey: "Mock"))
-        return .skipChildren
+extension FileManager {
+
+    static func modifiedWithin(_ delta: Int?, at path: String) -> Bool {
+        if let fileAttrs = try? FileManager.default.attributesOfItem(atPath: path),
+            let modifiedDate = fileAttrs[FileAttributeKey.creationDate] as? Date {
+            let now = Date()
+            let days = Int(floor(modifiedDate.distance(to: now) / 60 / 60 / 24))
+            if let delta = delta, days < delta {
+                return true
+            }
+        }
+        return false
     }
 }
+

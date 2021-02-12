@@ -1,4 +1,4 @@
 module _CSwiftSyntax {
-    umbrella "/Users/ellie/Developer/swift-codesan/.build/checkouts/swift-syntax/Sources/_CSwiftSyntax/include"
+    umbrella "/Users/ellie/Developer/misc/other/SwiftCodeSan/.build/checkouts/swift-syntax/Sources/_CSwiftSyntax/include"
     export *
 }

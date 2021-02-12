@@ -1,9 +1,9 @@
 #if TESTFILE
-extension PaymentIntegration {
+extension Integration {
     var isUnitTest: Bool {
-        #if UITEST
+        #if TEST
         if case .test = RunType.current {
-            return !(Octopus.isOctopusActive() || TestRunner.sharedInstance.isActive)
+            return !(Handler.isHandlerActive() || runner.sharedInstance.isActive)
         }
         #else
         let x = SomeType().someMethod()
@@ -11,10 +11,10 @@ extension PaymentIntegration {
         #endif
     }
 
-    var workersProviderMock: PaymentIntegrationWorkersProvidingMock { shared { PaymentIntegrationWorkersProvidingMock() } }
+    var workersProviderMock: IntegrationProviderMock { shared { IntegrationProviderMock() } }
 }
 
 
-let s = SwipeTransitionInteractionController()
+let s = SwipeTransitionController()
 
 #endif

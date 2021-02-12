@@ -4,21 +4,21 @@ import Foundation
 import Test1
 
 
-private let deserializeError = NSError(domain: MobileStudioStorageErrorDomain, code: MobileStudioStorageInvalidData, userInfo: nil)
+private let error = NSError(domain: TestDomain, code: InvalidData, userInfo: nil)
 
-extension String: MobileStudioStorable {
+extension String {
 
-    static func instance(fromData data: Data) throws -> String {
+    static func instance(from data: Data) throws -> String {
         let result = self.init(data: data, encoding: .utf8)
         if let result = result {
             return result
         } else {
-            throw deserializeError
+            throw error
         }
     }
 }
 
-let NoopTraceSingleton = NoopTraceObject()
+let SomeSingleton = SomeSingletonObject()
 
 // This is a comment
 // doc comment
@@ -32,9 +32,9 @@ public protocol XAB {
     subscript(key: Int) -> String? { get }
 }
 
-class KEX {}
+class KEY {}
 
-extension KEX: XAB {
+extension KEY: XAB {
     public subscript(key: Int) -> String? {
         return nil
     }
@@ -44,7 +44,7 @@ extension KEX: XAB {
     }
 
     var debugDescription: String {
-        return "this is P1"
+        return "this is KEY"
     }
 }
 

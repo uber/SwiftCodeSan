@@ -4,17 +4,15 @@
 #if TESTFILE
 
 import Foundation
-import ResumableAssert
 
-@_transparent public func uberAssert(_ resumable: Bool) {
+@_transparent public func testAssert(_ resumable: Bool) {
     let x = AssertStaticString()
     print(x)
     
-    if uberAssertionDisabled {
-        // skip condition check if assertion is disabled
+    if testAssertionDisabled {
         return
     }
-    resumableAssert(message(), file: unsafeBitCast(assertStaticString, to: StaticString.self), function: function, line: line)
+    reassert(message(), file: unsafeBitCast(assertStaticString, to: StaticString.self), function: function, line: line)
     
     
     let handler = AssertionHandlers.assertionFailure
@@ -27,7 +25,7 @@ class AssertionHandlers {
 
 public struct AssertStaticString {
     public init() {}
-    public func omg() -> Int {
+    public func check() -> Int {
         return 5
     }
 }
@@ -41,28 +39,25 @@ public extension String {
 public typealias AssertionHandler = (String?, data: LogModelMetadata?, line: UInt)
 
 
-public let uberAssertionDisabled: Bool = {
+public let testAssertionDisabled: Bool = {
     return false
 }()
 
-public func resumableAssert(_ message: String, file: StaticString, function: String, line: UInt) {
+public func reassert(_ message: String, file: StaticString, function: String, line: UInt) {
 }
 
 
-
-public class Synchronized {
+public class SynchronizedFoo {
     
 }
 
 public protocol KeyValueSubscripting {
     associatedtype Key
     associatedtype Value
-    
-    /// Accesses the value associated with the given key for reading and writing.
     subscript(key: Key) -> Value? { get set }
 }
 
-public extension Synchronized: KeyValueSubscripting where T: KeyValueSubscripting {
+public extension SynchronizedFoo: KeyValueSubscripting where T: KeyValueSubscripting {
     public subscript(key: T.Key) -> T.Value? {
         get {
             return read { (collection) -> T.Value? in
@@ -77,7 +72,7 @@ public extension Synchronized: KeyValueSubscripting where T: KeyValueSubscriptin
     }
 
     public func bar() -> String {
-        return "asdf"
+        return "bar"
     }
 
 }

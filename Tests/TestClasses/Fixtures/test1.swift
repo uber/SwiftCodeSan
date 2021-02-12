@@ -1,6 +1,7 @@
+#if TESTFILE
 import Foundation
 
-public protocol FileManaging {
+public protocol FileHandler {
 
     func createFile(atPath: String, contents: Data?, attributes: [FileAttributeKey: Any]?) -> Bool
     func moveItem(at url: URL, to: URL) throws
@@ -32,7 +33,7 @@ public protocol FileManaging {
 
 }
 
-extension FileManager: FileManaging {
+extension FileManager: FileHandler {
     public func write(data: Data, to url: URL, options: Data.WritingOptions) throws {
         try data.write(to: url, options: options)
     }
@@ -69,3 +70,4 @@ extension FileManager: FileManaging {
         try url.setResourceValues(values)
     }
 }
+#endif

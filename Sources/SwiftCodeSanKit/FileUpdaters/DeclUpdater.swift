@@ -83,7 +83,6 @@ final class DeclUpdater {
                             lock: NSLock?,
                             unusedImports: [String: [String]],
                             completion: @escaping (String, String) -> ()) {
-        //        guard path.shouldParse(with: filterPaths) else { return }
         do {
             let node = try SyntaxParser.parse(path)
             let remover = ImportRewriter(path, unusedModules: unusedImports[path])
@@ -96,63 +95,5 @@ final class DeclUpdater {
             fatalError(error.localizedDescription)
         }
     }
-    func updateTests(paths: [String],
-                     unusedMap: DeclMap,
-                     completion: @escaping (String, String, Bool) -> ()) {
-        scan(paths) { (path, lock) in
-            do {
-                let node = try SyntaxParser.parse(path)
-                let keyed = { (name: String) -> String in
-                    if name.hasSuffix("SnapshotTests") {
-                        return String(name.dropLast("SnapshotTests".count))
-                    } else if name.hasSuffix("SnapshotTest") {
-                        return  String(name.dropLast("SnapshotTest".count))
-                    } else if name.hasSuffix("Tests") {
-                        return String(name.dropLast("Tests".count))
-                    } else if name.hasSuffix("Test") {
-                        return String(name.dropLast("Test".count))
-                    }
-                    return name
-                }
-                let remover = DeclRemover(path, decls: [])
-                let ret = remover.visit(node)
-                // only remove part of this file, else delete the whole file in completion
-                let shouldDeleteFile = false // declsInFile == unusedDecls && declsInFile > 0
-
-                lock?.lock()
-                completion(path, ret.description, shouldDeleteFile)
-                lock?.unlock()
-            } catch {
-                fatalError(error.localizedDescription)
-            }
-        }
-    }
-
-    #if REPORT_NO_MODIFY_BODY
-    // If within a test body, var decls, func bodies, exprs, return val,
-    // remove the whole function or class or lines:
-    // let x = UnusedClass()  // need to remove occurrences of x (expr itself), replace w subst.
-    // let x: UnusedClass    // remove above and assignment to x
-    //   updateBody(current, unusedMap: unusedMap, content: &content)
-    private func updateBody(_ current: Structure,
-                            unusedMap: DeclMap,
-                            content: inout Data) {
-        for sub in current.substructures {
-            let types = [sub.name.typeComponents, sub.typeName.typeComponents].flatMap{$0}
-            for t in types {
-                var tname = t
-                if t.hasSuffix("Mock") {
-                    tname = String(t.dropLast("Mock".count))
-                }
-                if unusedMap[tname] != nil {
-                    replace(&content, start: sub.startOffset, end: sub.endOffset, with: space)
-                }
-            }
-            updateBody(sub, unusedMap: unusedMap, content: &content)
-        }
-    }
-    #endif
-
-
 }
 

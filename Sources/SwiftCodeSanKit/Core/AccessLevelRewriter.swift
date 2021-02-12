@@ -48,7 +48,7 @@ public final class AccessLevelRewriter: SyntaxRewriter {
                         list.append(updatedModifier)
                     } else {
 
-                        if isModified, modifier.name.text == "internal", modifier.detail?.text == "set" {
+                        if isModified, modifier.name.text == String.internal, modifier.detail?.text == "set" {
                             let updatedAcl = modifier.name.withKind(.stringLiteral("")).withoutTrailingTrivia()
                             let updatedModifier = SyntaxFactory.makeDeclModifier(name: updatedAcl, detailLeftParen: nil, detail: nil, detailRightParen: nil)
                             list.append(updatedModifier)

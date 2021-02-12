@@ -21,8 +21,6 @@ public class DeclParser {
     
     public init() {}
 
-    // MARK - input is a file to module map
-
     func scanAndMapDecls(fileToModuleMap: [String: String],
                          topDeclsOnly: Bool,
                          whitelist: Whitelist?) -> DeclMap {

@@ -21,7 +21,6 @@ import SwiftSyntax
 Decl metadata needed for decls in source code being parsed
 */
 
-
 public typealias DeclMap = [String: [DeclMetadata]]
 
 public enum DeclType {
@@ -132,7 +131,6 @@ struct AnnotationMetadata {
 
 public struct Whitelist {
     public let thresholdDays: Int?
-    public let pathsInfix: [String]?
     public let decls: [String]?
     public let declsPrefix: [String]?
     public let declsSuffix: [String]?
@@ -143,7 +141,6 @@ public struct Whitelist {
     public let members: [String]?
 
     public init(thresholdDays: Int?,
-                pathsInfix: [String]?,
                 decls: [String]?,
                  declsPrefix: [String]?,
                  declsSuffix: [String]?,
@@ -153,7 +150,6 @@ public struct Whitelist {
                  inheritedTypes: [String]?,
                  members: [String]?) {
         self.thresholdDays = thresholdDays
-        self.pathsInfix = pathsInfix
         self.decls = decls
         self.declsPrefix = declsPrefix
         self.declsSuffix = declsSuffix
@@ -165,15 +161,6 @@ public struct Whitelist {
     }
 
     func declWhitelisted(name: String, isMember: Bool, module: String?, parents: [String]?, path: String?) -> Bool {
-        if let path = path {
-            if let list = pathsInfix {
-                for infix in list {
-                    if path.contains(infix) {
-                        return true
-                    }
-                }
-            }
-        }
         if let module = module {
             if let list = modules, list.contains(module) {
                 return true

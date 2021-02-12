@@ -1,18 +1,18 @@
 #if TESTFILE
 
-enum OMG {
+enum State {
     case eat(SomeFood)
-    case sleep
+    case sleep(SomeTime)
 }
 
-public func toJSON(arg: OMG) -> JSON {
+public func toJSON(arg: String) -> JSON {
     var dict = [String: JSON]()
 
     switch arg {
         case .eat(let value):
             print(value)
-        case .Disclaimer(let value):
-            dict["type"] = "disclaimer"
+        case .sleep(let value):
+            dict["state"] = value
     }
 
     return .dictionary(dict)
@@ -20,21 +20,21 @@ public func toJSON(arg: OMG) -> JSON {
 
 
 
-public typealias T = (String, GrpcStreamingEventHandler)
-public typealias GrpcStreamingEventHandler<StreamingResponse> = (Bool, StreamingResponse?, Error?) -> ()
+public typealias T = (String, EventHandler)
+public typealias EventHandler<StreamingResponse> = (Bool, StreamingResponse?, Error?) -> ()
 
-#if CRASH_ON_ASSERT
+#if SOME_CONDITION
 
     public extension String {
-        func withFakeStaticStringForAssertion(_ block: (_ assertStaticString: AssertStaticString) -> ()) {
+        func withAssertion(_ block: (_ str: StaticString) -> ()) {
             if let stringData = self.data(using: .utf8, allowLossyConversion: false) {
-                var assertStaticString = AssertStaticString()
-                assertStaticString._utf8CodeUnitCount = stringData.count
+                var x = StaticString()
+                x._utf8CodeUnitCount = stringData.count
                 stringData.withUnsafeBytes { rawBufferPointer in
                     if let rawPtr = rawBufferPointer.baseAddress {
-                        assertStaticString._startPtrOrData = Int(bitPattern: rawPtr)
+                        x._startPtrOrData = Int(bitPattern: rawPtr)
                     }
-                    block(assertStaticString)
+                    block(x)
                 }
             }
         }

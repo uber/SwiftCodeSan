@@ -46,7 +46,7 @@ public func removeDeadDecls(filesToModules: [String: String],
         if let refModule = filesToModules[path] {
             markUsed(refs, in: refModule, imports: imports, with: flatDeclMap, updateMembers: true)
         }
-
+        
         log("#Checked refs", counter: &nref, interval: 1000, timed: true)
     }
     logTime()
@@ -58,7 +58,7 @@ public func removeDeadDecls(filesToModules: [String: String],
         logTime()
     } while shouldRetry
     var i = flatDeclMap.values.flatMap{$0}.filter{$0.used}.count
-
+    
     log("Mark bound types used...")
     markBoundTypesUsed(declMap: flatDeclMap)
     resetVisited(declMap: declMap)
@@ -102,7 +102,7 @@ public func removeDeadDecls(filesToModules: [String: String],
     
     if let logfile = logFilePath {
         log("Save results to", logfile)
-
+        
         let ret = pathToDeclsUpdate.map { arg in
             let vals = arg.value.map{ ObjectIdentifier($0).debugDescription  + ", " + $0.fullName + ", " + $0.encloser }
             let valStr = vals.joined(separator: "\n")
@@ -186,7 +186,7 @@ private func markInterfaceMembersUsed(declMap: DeclMap) {
             log("#Marked used members", counter: &ndecls, interval: 10000, timed: true)
         }
     }
-
+    
 }
 
 private func markBoundMembersUsed(key cur: DeclMetadata,
@@ -196,7 +196,7 @@ private func markBoundMembersUsed(key cur: DeclMetadata,
                                   interfaceMembers: inout [DeclMetadata],
                                   userDefinedTypes: inout [String],
                                   stdlibTypes: inout [String]) {
-
+    
     // First resolve inheritance (loop up protocol conformance, subclassing, and update member ALs)
     var parents = cur.inheritedTypes
     let curIsExtension = cur.declType == .extensionType
@@ -204,27 +204,9 @@ private func markBoundMembersUsed(key cur: DeclMetadata,
         parents.append(cur.name)
     }
     resolveInheritance(key: cur, inheritedTypes: parents, declMap: declMap, level: level, members: &members, interfaceMembers: &interfaceMembers, userDefinedTypes: &userDefinedTypes, stdlibTypes: &stdlibTypes)
-
+    
     let stdTypes = stdlibTypes.filter{!userDefinedTypes.contains($0)}
-
-//    let should = cur.name == "TripInteractor" && cur.declType == .extensionType &&  cur.inheritedTypes.contains("TripActionableItem")
-//    let should = cur.name == "RideInteractor" && cur.declType == .classType
-    //    let should = (cur.name == "TransitTicketStreaming" && cur.declType == .protocolType) ||
-    //                    (cur.name == "TransitTicketStream" && cur.declType == .classType)
-
-    let x = cur.name == "CreditsAutoReloadSettingsPresentable" && (cur.declType == .protocolType || cur.declType == .extensionType)
-    let y = cur.name == "ImageViewLoading"
-    let should = x || y
-
-    if should {
-        print(cur.name, cur.declType, cur.used)
-        let x = interfaceMembers.map{$0.fullName + ObjectIdentifier($0).debugDescription }
-        let y = members.map{$0.fullName + ObjectIdentifier($0).debugDescription }
-        print("-- INTERFACE members:", x)
-        print("-- MEMBERS:", y)
-    }
-
-
+    
     for member in members {
         let matchingMembers = interfaceMembers.filter {$0.name == member.name}
         for matched in matchingMembers {
@@ -242,13 +224,6 @@ private func markBoundMembersUsed(key cur: DeclMetadata,
                 }
                 member.used = true
             }
-
-            if should {
-                print(cur.name, cur.declType)
-
-                print("-- MATCHED:", matched.fullName, matched.used, ObjectIdentifier(matched))
-                print("-- Member:", member.fullName, member.used, ObjectIdentifier(member))
-            }
         }
         
         if matchingMembers.isEmpty, member.isOverride {
@@ -256,7 +231,7 @@ private func markBoundMembersUsed(key cur: DeclMetadata,
             member.used = true
         }
     }
-
+    
     // For the following decl types, check bound types and update member ALs.
     if cur.declType == .extensionType || cur.declType == .enumType {
         if !cur.used {
@@ -274,7 +249,7 @@ private func markBoundMembersUsed(key cur: DeclMetadata,
                 if boundType.isEmpty {
                     continue
                 }
-                if cur.name != boundType, let boundTypeVals = declMap[boundType] {
+                if cur.name != boundType, let _ = declMap[boundType] {
                     // even if boundtype is used, cur might not be used
                 } else if cur.inheritedTypes.contains(boundType) {
                     // If parent is not in declMap, assume it's in stdlib.
@@ -301,7 +276,7 @@ private func resolveInheritance(key cur: DeclMetadata,
                                 stdlibTypes: inout [String]) {
     
     let parents = inheritedTypes ?? cur.inheritedTypes
-
+    
     for parent in parents {
         if parent.isEmpty {
             continue
@@ -312,13 +287,11 @@ private func resolveInheritance(key cur: DeclMetadata,
                     continue
                 }
                 if parentDecl.declType == .protocolType || parentDecl.declType == .classType || parentDecl.declType == .typealiasType {
-//                    if parentDecl.used {
-                        if parentDecl.declType == .protocolType {
-                            interfaceMembers.append(contentsOf: parentDecl.members)
-                        } else if parentDecl.declType == .classType, cur.declType == .classType {
-                            interfaceMembers.append(contentsOf: parentDecl.members)
-                        }
-//                    }
+                    if parentDecl.declType == .protocolType {
+                        interfaceMembers.append(contentsOf: parentDecl.members)
+                    } else if parentDecl.declType == .classType, cur.declType == .classType {
+                        interfaceMembers.append(contentsOf: parentDecl.members)
+                    }
                     
                     userDefinedTypes.append(parentDecl.name)
                     members.append(contentsOf: cur.members)
@@ -338,12 +311,12 @@ private func resolveInheritance(key cur: DeclMetadata,
             stdlibTypes.append(parent)
         }
     }
-
+    
     for stdlibType in stdlibTypes {
         if userDefinedTypes.contains(stdlibType) {
             continue
         }
-
+        
         interfaceMembers.append(contentsOf: cur.members)
         members.append(contentsOf: cur.members)
         break
@@ -419,9 +392,9 @@ private func markUsed(_ refs: Set<String>, in refModule: String, imports: [Strin
             for refDecl in refDecls {
                 if refModule == refDecl.module || imports.contains(refDecl.module) || refDecl.isOverride {
                     refDecl.used = true
-               }
+                }
             }
-
+            
         }
     }
 }

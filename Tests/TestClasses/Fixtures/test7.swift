@@ -2,17 +2,17 @@
 
 extension Foo {
     #if DEBUG
-        var omg: Bool {
+        var baz: Bool {
             if case .test = RunType.current {
-                return !(Octopus.isOctopusActive() || TestRunner.sharedInstance.isActive)
+                return !(Handler.isHandlerActive() || runner.sharedInstance.isActive)
             }
             return false
         }
 
-        var workersProviderMock: PaymentIntegrationWorkersProvidingMock { shared { PaymentIntegrationWorkersProvidingMock() } }
-        fileprivate var workersProvider: PaymentIntegrationWorkersProviding { isUnitTest ? workersProviderMock : shared { PaymentIntegrationWorkersProvider(parent: self) } }
+        var zmock: ZMock { shared { ZMock() } }
+        fileprivate var zvar: Z { shared { Z(with: self) } }
     #else
-        fileprivate var brb: PaymentIntegrationWorkersProviding { shared { PaymentIntegrationWorkersProvider(parent: self) } }
+        fileprivate var cat: Z { shared { Z(with: self) } }
     #endif
 }
 
@@ -28,8 +28,7 @@ class Klass: P {
     private static var loadedFonts: Synchronized<[String: UIFont]> = Synchronized()
 
     public init() {
-        uberAssert(true)
-        //        print(loadedFonts)
+        testAssert(true)
     }
 
     public init(store: KeyValueStore<Key>,
@@ -42,8 +41,8 @@ class Klass: P {
         self.hitTargetSubject = ReplaySubject<Bool>.create(bufferSize: 1)
 
         queue.async {
-            let count = store.synchronously(performStorageOperations: { (storeWrapper: SynchronousKeyValueStoreWrapper<Key>?) -> Int? in
-                return storeWrapper?.element(forKey: storeKey)
+            let count = store.synchronously(operate: { (container: SynchronousKeyValueStoreContainer<Key>?) -> Int? in
+                return container?.item(for: storeKey)
             })
             print(count)
         }
@@ -51,14 +50,12 @@ class Klass: P {
 }
 
 public final class KeyValueStore<Key> where Key: StoredKeying {
-    public func synchronously<T>(performStorageOperations operations: (SynchronousKeyValueStoreWrapper<Key>?) -> T) -> T {
-        let wrapper = SynchronousKeyValueStoreWrapper(self)
-        let result = operations(wrapper)
-        wrapper.invalidate()
+    public func synchronously<T>(operations: (SynchronousKeyValueStoreContainer<Key>?) -> T) -> T {
+        let container = SynchronousKeyValueStoreContainer(self)
+        let result = operations(container)
+        container.invalidate()
         return result
     }
 }
-
-//print(k)
 
 #endif

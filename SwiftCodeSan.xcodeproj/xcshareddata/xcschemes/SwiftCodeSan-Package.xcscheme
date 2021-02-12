@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SwiftCodeSan::SwiftCodeSanKit"
-               BuildableName = "SwiftCodeSanKit.framework"
-               BlueprintName = "SwiftCodeSanKit"
+               BlueprintIdentifier = "SwiftCodeSan::SwiftCodeSan"
+               BuildableName = "SwiftCodeSan"
+               BlueprintName = "SwiftCodeSan"
                ReferencedContainer = "container:SwiftCodeSan.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,9 +28,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "SwiftCodeSan::SwiftCodeSan"
-               BuildableName = "SwiftCodeSan"
-               BlueprintName = "SwiftCodeSan"
+               BlueprintIdentifier = "SwiftCodeSan::SwiftCodeSanKit"
+               BuildableName = "SwiftCodeSanKit.framework"
+               BlueprintName = "SwiftCodeSanKit"
                ReferencedContainer = "container:SwiftCodeSan.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

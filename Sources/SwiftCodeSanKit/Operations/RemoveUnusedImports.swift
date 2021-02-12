@@ -61,11 +61,6 @@ public func removeUnusedImports(fileToModuleMap: [String: String],
         return false
     }
 
-    let resourceSuffixes = ["Strings", "Images"]
-    let moduleFromResourceBlock = { (name: String) -> String? in
-        return resourceSuffixes.compactMap { return name.hasSuffix($0) ? name.components(separatedBy: $0).first : nil }.first
-    }
-
     log("Check referenced decls and compare their source modules against imported modules to filter out unused imports...")
     var total = 0
     p.checkRefs(fileToModuleMap: fileToModuleMap, declMap: allDeclMap) { (filepath, refs, imports) in
@@ -74,10 +69,6 @@ public func removeUnusedImports(fileToModuleMap: [String: String],
             usedImportsInFile[i] = whitelistModulesBlock(i)
         }
         for r in refs {
-            if let m = moduleFromResourceBlock(r), imports.contains(m) {
-                usedImportsInFile[m] = true
-            }
-
             if let refDecls = allDeclMap[r] {
                 for refDecl in refDecls {
                     let m = refDecl.module

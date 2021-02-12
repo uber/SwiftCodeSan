@@ -49,7 +49,7 @@ final class DeclVisitor: SyntaxVisitor {
     }
 
     override func visit(_ node: ClassDeclSyntax) -> SyntaxVisitorContinueKind {
-        if node.attributesDescription.contains("propertyWrapper") {
+        if node.attributesDescription.contains(String.propertyWrapper) {
             return .skipChildren
         }
 
@@ -57,7 +57,7 @@ final class DeclVisitor: SyntaxVisitor {
         return .visitChildren
     }
     override func visit(_ node: StructDeclSyntax) -> SyntaxVisitorContinueKind {
-        if node.attributesDescription.contains("propertyWrapper") {
+        if node.attributesDescription.contains(String.propertyWrapper) {
             return .skipChildren
         }
 
@@ -81,7 +81,7 @@ final class DeclVisitor: SyntaxVisitor {
         if let item = node.item.as(FunctionDeclSyntax.self) {
             updateDecl(item, description: item.description, members: nil)
             return .skipChildren
-        } else if let item = node.item.as(OperatorDeclSyntax.self) {
+        } else if let _ = node.item.as(OperatorDeclSyntax.self) {
             return .skipChildren
         } else if let item = node.item.as(VariableDeclSyntax.self) {
             updateDecl(item, description: item.description, members: nil)
@@ -121,8 +121,7 @@ final class DeclVisitor: SyntaxVisitor {
         let decls = item.declMetadatas(path: path, module: module, encloser: "", description: description, imports: importedModules)
 
         for decl in decls {
-            // TODO: add whitelistPath back 
-            var shouldWhitelist = (decl.declType == .operatorType) // || whitelistPath
+            var shouldWhitelist = (decl.declType == .operatorType)
             if !shouldWhitelist, !decl.name.isEmpty {
                 if let whitelist = whitelist, whitelist.declWhitelisted(name: decl.name, isMember: false, module: module, parents: decl.inheritedTypes, path: decl.path) {
                     // whitelisted so don't add to declMap

@@ -14,18 +14,18 @@
         "package": "SwiftSyntax",
         "repositoryURL": "https://github.com/apple/swift-syntax.git",
         "state": {
-          "branch": null,
-          "revision": "0688b9cfc4c3dd234e4f55f1f056b2affc849873",
-          "version": "0.50200.0"
+          "branch": "swift-5.3-RELEASE",
+          "revision": "e39d380a1877da137d45cc5dcd23676a3fd00476",
+          "version": null
         }
       },
       {
         "package": "swift-tools-support-core",
         "repositoryURL": "https://github.com/apple/swift-tools-support-core.git",
         "state": {
-          "branch": "master",
+          "branch": null,
           "revision": "81e2cda46447b4d78c18e03b0d284d76950f7c2b",
-          "version": null
+          "version": "0.1.5"
         }
       }
     ]
