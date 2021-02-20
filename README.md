@@ -1,8 +1,8 @@
 # ![](Images/logo.png)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/2964/badge)](https://bestpractices.coreinfrastructure.org/projects/2964)
-[![Build Status](https://travis-ci.com/uber/SwiftCodeSan.svg?&branch=master)](https://travis-ci.com/uber/SwiftCodeSan.svg?token=xLqK5hKgjQBvRErSp7Wk&branch=master)
+[![Build Status](https://github.com/uber/SwiftCodeSan/workflows/CI/badge.svg)](https://github.com/uber/SwiftCodeSan/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![FOSSA Status](https://app.fossa.com/api/projects/custom%2B4458%2Fgithub.com%2Fuber%2FSwiftCodeSan.svg?type=shield)](https://app.fossa.com/projects/custom%2B4458%2Fgithub.com%2Fuber%2FSwiftCodeSan?ref=badge_shield)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fuber%2FSwiftCodeSan.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fuber%2FSwiftCodeSan?ref=badge_shield)
 
 # Welcome to SwiftCodeSan
 
