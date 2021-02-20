@@ -276,6 +276,8 @@ class Executor {
                                concurrencyLimit: jobs,
                                onCompletion: {})
 
-        } 
+        } else {
+            print("Please pass in an option to execute, e.g. --remove-deadcode. For help, try --help. ")
+        }
     }
 }
