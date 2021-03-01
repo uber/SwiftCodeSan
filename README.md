@@ -56,7 +56,7 @@ $ swift package generate-xcodeproj
 `SwiftCodeSan` is a commandline executable. To run it, pass in a list of the source file directories or file paths of a build target, and the destination filepath for the mock output. To see other arguments to the commandline, run `SwiftCodeSan --help`.
 
 ```
-./SwiftCodeSan --files-to-mouldes [file_to_module_list] --remove-deadcode --in-place
+./SwiftCodeSan --files-to-modules [file_to_module_list] --remove-deadcode --in-place
 ```
 The `file_to_module_list` contains a map of source file paths to corresponding module names.  Other input options are `--remote-unused-imports` and `--remove-public`.  If `--in-place` is set, files will be modified directly. 
 

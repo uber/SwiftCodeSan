@@ -69,7 +69,7 @@ class Executor {
                                  kind: String.self,
                                  usage: "Log file path containing the analysis results. If no value is given, it will be saved to a tmp file.",
                                  completion: .filename)
-        fileLists = parser.add(option: "--files-to-mouldes",
+        fileLists = parser.add(option: "--files-to-modules",
                                shortName: "-f",
                                kind: [String].self,
                                usage: "File paths each containing a map of source files and corresponding module names.",
