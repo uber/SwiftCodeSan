@@ -58,7 +58,7 @@ $ swift package generate-xcodeproj
 ```
 ./SwiftCodeSan --files-to-modules [file_to_module_list] --remove-deadcode --in-place
 ```
-The `file_to_module_list` contains a map of source file paths to corresponding module names.  Other input options are `--remove-unused-imports` and `--remove-public`.  If `--in-place` is set, files will be modified directly. 
+The `file_to_module_list` contains a map of source file paths to corresponding module names.  Other input options are `--remove-unused-imports` and `--update-access-levels`.  If `--in-place` is set, files will be modified directly. 
 
 Use --help to see the complete list of argument options.
 
