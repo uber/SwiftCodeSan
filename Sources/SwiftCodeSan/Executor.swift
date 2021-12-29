@@ -22,7 +22,7 @@ struct Executor: ParsableCommand {
     static var configuration = CommandConfiguration(commandName: "SwiftCodeSan", abstract: "SwiftCodeSan: Code Sanitizer for Swift.")
 
     // MARK: - Private
-    @Option(name: [.long, .short],
+    @Option(name: [.long, .customShort("v")],
             help: "The logging level to use. Default is set to 0 (info only). Set 1 for verbose, 2 for warning, and 3 for error.")
     private var loggingLevel: Int = 0
     @Option(name: .customLong("logfile"),
