@@ -13,24 +13,14 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
+import ArgumentParser
 import Foundation
-import TSCUtility
-import TSCBasic
 
 func main() {
-
-    let parser = ArgumentParser(usage: "<options>", overview: "SwiftCodeSan: Code Sanitizer for Swift.")
-    let command = Executor(parser: parser)
     let inputs = Array(CommandLine.arguments.dropFirst())
 
     print("Start...")
-    do {
-        let args = try parser.parse(inputs)
-        command.execute(with: args)
-    } catch {
-        fatalError("Command-line pasing error (use --help for help): \(error)")
-    }
-    
+    Executor.main(inputs)
     print("Done.")
 }
 

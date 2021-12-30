@@ -11,9 +11,8 @@ let package = Package(
         .library(name: "SwiftCodeSanKit", targets: ["SwiftCodeSanKit"]),
         ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.0.4")),
-        .package(url: "https://github.com/apple/swift-tools-support-core.git", .exact("0.1.5")),
-        .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .branch("swift-5.3-RELEASE"))
+        .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "1.0.2")),
+        .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .branch("swift-5.5-RELEASE"))
     ],
     targets: [ 
         .target(
@@ -21,7 +20,6 @@ let package = Package(
             dependencies: [
                 "SwiftCodeSanKit",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                .product(name: "SwiftToolsSupport-auto", package: "swift-tools-support-core"),
                 ]),
         .target(
             name: "SwiftCodeSanKit",
