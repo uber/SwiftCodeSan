@@ -136,6 +136,8 @@ struct Executor: ParsableCommand {
     }
 
     mutating func run() throws {
+        minLogLevel = loggingLevel
+
         var filesToModules = [String: String]()
         fileLists.forEach { arg in
             let line = arg.components(separatedBy: ":")
