@@ -21,6 +21,23 @@ import SwiftCodeSanKit
 struct Executor: ParsableCommand {
     static var configuration = CommandConfiguration(commandName: "SwiftCodeSan", abstract: "SwiftCodeSan: Code Sanitizer for Swift.")
 
+    private enum Operation: EnumerableFlag {
+        case removeDeadcode
+        case removeUnusedImports
+        case updateAccessLevels
+
+        static func help(for value: Executor.Operation) -> ArgumentHelp? {
+            switch value {
+            case .removeDeadcode:
+                return "If set, it will remove dead code and generate a report in the logfile. If an --in-place option is set, files will be modified directly."
+            case .removeUnusedImports:
+                return "If set, it will remove unused import statements and generate a report in the logfile. If an --in-place option is set, files will be modified directly."
+            case .updateAccessLevels:
+                return "If set, it will remove unnecessary public or open access levels from decls and generate a report in the logfile. If an --in-place option is set, files will be modified directly."
+            }
+        }
+    }
+
     // MARK: - Private
     @Option(name: [.long, .customShort("v")],
             help: "The logging level to use. Default is set to 0 (info only). Set 1 for verbose, 2 for warning, and 3 for error.")
@@ -96,15 +113,7 @@ struct Executor: ParsableCommand {
             help: "If set, files modified within the set number of days (leading up to today) will be whitelisted, i.e. all declarations in such files will be whitelisted.")
     private var thresholdDays: Int?
 
-    @Flag(name: .customLong("remove-deadcode"),
-          help: "If set, it will remove dead code and generate a report in the logfile. If an --in-place option is set, files will be modified directly. ")
-    private var deleteDeadCode: Bool = false
-    @Flag(name: .customLong("remove-unused-imports"),
-          help: "If set, it will remove unused import statements and generate a report in the logfile. If an --in-place option is set, files will be modified directly. ")
-    private var deleteUnusedImports: Bool = false
-    @Flag(name: .customLong("update-access-levels"),
-          help: "If set, it will remove unnecessary public or open access levels from decls and generate a report in the logfile. If an --in-place option is set, files will be modified directly. ")
-    private var shouldUpdateAccessLevels: Bool = false
+    @Flag private var operation: Operation
     @Option(name: .customLong("remove-annotation"),
             help: "If set, it will remove the annotation passed in from decls and generate a report in the logfile. If an --in-place option is set, files will be modified directly. ")
     private var deleteAnnotation: String?
@@ -127,12 +136,6 @@ struct Executor: ParsableCommand {
             return path.replacingOccurrences(of: "~", with: home, range: path.range(of: "~"))
         }
         return FileManager.default.currentDirectoryPath + "/" + path
-    }
-
-    mutating func validate() throws {
-        guard deleteUnusedImports || deleteDeadCode || shouldUpdateAccessLevels else {
-            throw ValidationError("Please pass in an option to execute, e.g. --remove-deadcode. For help, try --help. ")
-        }
     }
 
     mutating func run() throws {
@@ -165,9 +168,7 @@ struct Executor: ParsableCommand {
                 topDeclsOnly,
                 concurrencyLimit,
                 whitelist,
-                deleteUnusedImports,
-                shouldUpdateAccessLevels,
-                deleteDeadCode,
+                operation,
                 deleteAnnotation)
     }
 
@@ -182,20 +183,18 @@ struct Executor: ParsableCommand {
                          _ topDeclsOnly: Bool,
                          _ jobs: Int?,
                          _ whitelist: Whitelist?,
-                         _ deleteUnusedImports: Bool,
-                         _ shouldUpdateAccessLevels: Bool,
-                         _ deleteDeadCode: Bool,
+                         _ operation: Operation,
                          _ deleteAnnotation: String?) {
 
-        if deleteUnusedImports {
+        switch operation {
+        case .removeUnusedImports:
             removeUnusedImports(fileToModuleMap: filesToModules,
                                 whitelist: whitelist,
                                 topDeclsOnly: topDeclsOnly,
                                 inplace: inplace,
                                 logFilePath: logfile,
                                 concurrencyLimit: jobs)
-
-        } else if deleteDeadCode {
+        case .removeDeadcode:
             removeDeadDecls(filesToModules: filesToModules,
                             whitelist: whitelist,
                             topDeclsOnly: topDeclsOnly,
@@ -205,14 +204,12 @@ struct Executor: ParsableCommand {
                             logFilePath: logfile,
                             concurrencyLimit: jobs,
                             onCompletion: {})
-
-        } else if shouldUpdateAccessLevels {
+        case .updateAccessLevels:
             updateAccessLevels(filesToModules: filesToModules,
                                whitelist: whitelist,
                                inplace: inplace,
                                concurrencyLimit: jobs,
                                onCompletion: {})
-
         }
     }
 }
