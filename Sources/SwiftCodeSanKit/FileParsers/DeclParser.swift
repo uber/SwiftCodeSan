@@ -16,6 +16,7 @@
 
 import Foundation
 import SwiftSyntax
+import SwiftSyntaxParser
 
 public class DeclParser {
     

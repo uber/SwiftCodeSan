@@ -12,7 +12,7 @@ let package = Package(
         ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "1.0.2")),
-        .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .branch("swift-5.5-RELEASE"))
+        .package(name: "SwiftSyntax", url: "https://github.com/apple/swift-syntax.git", .branch("swift-5.6-RELEASE"))
     ],
     targets: [ 
         .target(
@@ -25,6 +25,7 @@ let package = Package(
             name: "SwiftCodeSanKit",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "SwiftSyntax"),
+                .product(name: "SwiftSyntaxParser", package: "SwiftSyntax"),
             ]
         ),
         .testTarget(
