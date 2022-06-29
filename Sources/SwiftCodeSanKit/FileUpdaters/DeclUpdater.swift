@@ -17,6 +17,7 @@
 
 import Foundation
 import SwiftSyntax
+import SwiftSyntaxParser
 
 final class DeclUpdater {
 
